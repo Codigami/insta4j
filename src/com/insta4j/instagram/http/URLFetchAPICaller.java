@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import com.insta4j.instagram.InstaProp;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.codehaus.jackson.JsonParseException;
@@ -37,7 +38,7 @@ public class URLFetchAPICaller implements APICallerInterface {
 		String responseString = null;
 		String constructedParams = null;
 
-		try {
+
 
 			if (nameValuePairs != null) {
 				constructedParams = constructParams(nameValuePairs);
@@ -49,8 +50,19 @@ public class URLFetchAPICaller implements APICallerInterface {
 				}
 			}
 
-			fetchURL = new URL(url);
-			response = fetchService.fetch(fetchURL);
+      int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
+      while (retry > 0){
+        try {
+          fetchURL = new URL(url);
+          response = fetchService.fetch(fetchURL);
+          break;
+        } catch (IOException ex) {
+          retry --;
+          if(retry <= 0){
+            throw new InstagramException("IO Exception while calling facebook!", ex);
+          }
+        }
+      }
 
 			int statusCode = response.getResponseCode();
 			if (statusCode != HttpStatus.SC_OK) {
@@ -60,9 +72,7 @@ public class URLFetchAPICaller implements APICallerInterface {
 				throw new InstagramException(JSONToObjectTransformer.getError(responseString, statusCode));
 			}
 			responseString = new String(response.getContent());
-		}  catch (IOException e) {
-			throw new InstagramException("IO Exception while calling Instagram!", e);
-		}
+
 
 		// if response string contains accessToken=xxx remove it!
 		// responseString = Util.replaceAccessToken(responseString, nameValuePairs);
@@ -94,40 +104,51 @@ public class URLFetchAPICaller implements APICallerInterface {
 		String constructedParams = null;
 		int statusCode = 0;
 		HttpURLConnection connection = null;
-		try {
-			URL posturl = new URL(url);
-			connection = (HttpURLConnection) posturl.openConnection();
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST");
-			// connection.setConnectTimeout(10000);
-			// connection.setReadTimeout(10000);
+    int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
+    while (retry > 0){
+      try {
+        URL posturl = new URL(url);
+        connection = (HttpURLConnection) posturl.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        // connection.setConnectTimeout(10000);
+        // connection.setReadTimeout(10000);
 
-			OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
 
-			constructedParams = constructParams(nameValuePairs);
+        constructedParams = constructParams(nameValuePairs);
 
-			writer.write(constructedParams);
-			writer.close();
+        writer.write(constructedParams);
+        writer.close();
 
-			statusCode = connection.getResponseCode();
-			if (statusCode != HttpURLConnection.HTTP_OK) {
-				// "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
-				content = getResponse(connection);
-				throw new InstagramException(JSONToObjectTransformer.getError(content, statusCode));
-			} else {
-				content = getResponse(connection);
-			}
-		} catch (MalformedURLException e) {
-			throw new InstagramException("Malformed URL Exception while calling Instagram!", e);
-		} catch (IOException e) {
-			throw new InstagramException("IOException while calling Instagram!", e);
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+        statusCode = connection.getResponseCode();
+        if (statusCode != HttpURLConnection.HTTP_OK) {
+          // "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
+          content = getResponse(connection);
+          throw new InstagramException(JSONToObjectTransformer.getError(content, statusCode));
+        } else {
+          content = getResponse(connection);
+        }
+        break;
+      } catch (MalformedURLException e) {
+        throw new InstagramException("Malformed URL Exception while calling Instagram!", e);
+      } catch (IOException e) {
+          retry --;
+          if(retry <= 0){
+            throw new InstagramException("IO Exception while calling facebook!", e);
+          }
+          if (connection != null) {
+            connection.disconnect();
+            connection = null;
+          }
+      } finally {
+        if (connection != null) {
+          connection.disconnect();
+        }
+      }
+    }
 
-		return content;
+    return content;
 
 	}
 

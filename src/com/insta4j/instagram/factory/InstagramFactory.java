@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.insta4j.instagram.InstaProp;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonParseException;
@@ -119,9 +120,8 @@ public class InstagramFactory extends OAuthFactory implements Serializable {
 		//We make a call with the provided code, client_id, client_secret and redirect_uri
 		
 		NameValuePair[] nameValuePairs = getAccessTokenNameValuePairs(code, callbackURL);
-		
-		String rawData = caller.postData(Constants.ACCESS_TOKEN_URL,nameValuePairs);
-		
+
+    String rawData = caller.postData(Constants.ACCESS_TOKEN_URL,nameValuePairs);
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String,Object> userData = null;
 		try {

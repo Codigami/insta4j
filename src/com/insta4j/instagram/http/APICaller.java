@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.insta4j.instagram.InstaProp;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -168,25 +169,31 @@ public class APICaller implements APICallerInterface {
         }
 
         HttpGet getMethod = null;
-        try {
             getMethod = new HttpGet(url);
 
             /*if (httpParams != null) {
                 getMethod.setParams(httpParams);
             }*/
-
-
-            HttpResponse httpResponse = client.execute(getMethod);
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
-
-            response = EntityUtils.toString(httpResponse.getEntity());
-            if (statusCode != HttpStatus.SC_OK) {
-                //FacebookError error = new FacebookError(statusCode, "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
-                throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
+        int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
+        int statusCode = -1;
+        while (retry > 0){
+          try {
+                HttpResponse httpResponse = client.execute(getMethod);
+                statusCode = httpResponse.getStatusLine().getStatusCode();
+                response = EntityUtils.toString(httpResponse.getEntity());
+            break;
+          } catch (IOException ex) {
+            retry --;
+            if(retry <= 0){
+              throw new InstagramException("IO Exception while calling facebook!", ex);
             }
-        } catch (IOException e) {
-            throw new InstagramException("IO Exception while calling facebook!", e);
+          }
         }
+
+    if (statusCode != HttpStatus.SC_OK) {
+      //FacebookError error = new FacebookError(statusCode, "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
+      throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
+    }
 		
 		//if response string contains accessToken=xxx remove it!
 		//response = Util.replaceAccessToken(response, nameValuePairs);
@@ -215,34 +222,40 @@ public class APICaller implements APICallerInterface {
         String response = null;
 
         HttpPost postMethod = null;
-        try {
-            postMethod = new HttpPost(url);
-
+        postMethod = new HttpPost(url);
+        int statusCode = -1;
+        int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
+        while (retry > 0){
+          try {
             if (nameValuePairs != null) {
-                //HttpParams httpParams = new BasicHttpParams();
-                for (NameValuePair pair : nameValuePairs) {
-                    nameValuePairsList.add(new BasicNameValuePair(pair.getName(), pair.getValue()));
-                }
-                
-                UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(nameValuePairsList);
-                postMethod.setEntity(encodedFormEntity);
+              //HttpParams httpParams = new BasicHttpParams();
+              for (NameValuePair pair : nameValuePairs) {
+                  nameValuePairsList.add(new BasicNameValuePair(pair.getName(), pair.getValue()));
+              }
+
+              UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(nameValuePairsList);
+              postMethod.setEntity(encodedFormEntity);
             }
-            
-            
 
             HttpResponse httpResponse = client.execute(postMethod);
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            statusCode = httpResponse.getStatusLine().getStatusCode();
             response = EntityUtils.toString(httpResponse.getEntity());
-            if (statusCode != HttpStatus.SC_OK) {
-            	//FacebookError error = new FacebookError(statusCode, "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
-      		    throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
+            break;
+          } catch (IOException ex) {
+            retry --;
+            if(retry <= 0){
+              throw new InstagramException("IO Exception while calling facebook!", ex);
             }
-            
-            //shut down the connection manager
-            client.getConnectionManager().shutdown();
-        }  catch (IOException e) {
-            throw new InstagramException("IO Exception while calling facebook!", e);
+          }
         }
+
+        if (statusCode != HttpStatus.SC_OK) {
+          //FacebookError error = new FacebookError(statusCode, "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
+          throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
+        }
+            
+        //shut down the connection manager
+        client.getConnectionManager().shutdown();
 
         return response;
     }

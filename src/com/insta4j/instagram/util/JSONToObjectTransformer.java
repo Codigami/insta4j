@@ -4,6 +4,8 @@ import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.repackaged.org.json.JSONException;
+import com.google.appengine.repackaged.org.json.JSONObject;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -62,8 +64,12 @@ public class JSONToObjectTransformer {
 	}
 	
 	public static InstagramError getError(String response, int statusCode) {
-  	HttpError httpError =  gson.fromJson(response, HttpError.class);
-  	return new InstagramError(statusCode, "Exception Type: "+httpError.getError().getType()+ " " + httpError.getError().getMessage(), null);
+    try {
+      JSONObject jsonObject = new JSONObject(response);
+      JSONObject obj = jsonObject.getJSONObject("meta");
+      return new InstagramError(statusCode, String.valueOf(obj.getInt("code")) + ": " + obj.getString("error_message"), null);
+    }catch (JSONException e){}
+    return new InstagramError(statusCode, "There was some error. Please try again", null);
 	}
 	
 	/*public static void main(String[] args) {
