@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.insta4j.instagram.InstaProp;
+import com.insta4j.instagram.util.Constants;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -174,7 +175,12 @@ public class APICaller implements APICallerInterface {
             /*if (httpParams != null) {
                 getMethod.setParams(httpParams);
             }*/
-        int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
+        int retry = Constants.NETWORK_FAILURE_RETRY_COUNT;
+        String strRetryCount = InstaProp.get(Constants.KEY_NETWORK_FAILURE_RETRY_COUNT);
+        if (strRetryCount != null) {
+            retry = Integer.parseInt(strRetryCount);
+        }
+
         int statusCode = -1;
         while (retry > 0){
           try {
@@ -224,7 +230,11 @@ public class APICaller implements APICallerInterface {
         HttpPost postMethod = null;
         postMethod = new HttpPost(url);
         int statusCode = -1;
-        int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
+        int retry = Constants.NETWORK_FAILURE_RETRY_COUNT;
+        String strRetryCount = InstaProp.get(Constants.KEY_NETWORK_FAILURE_RETRY_COUNT);
+        if (strRetryCount != null) {
+            retry = Integer.parseInt(strRetryCount);
+        }
         while (retry > 0){
           try {
             if (nameValuePairs != null) {

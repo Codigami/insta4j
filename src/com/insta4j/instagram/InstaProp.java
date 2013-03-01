@@ -1,7 +1,8 @@
 package com.insta4j.instagram;
 
-import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,17 +13,24 @@ import java.util.Properties;
  */
 public class InstaProp {
 
-  private static Properties prop;
+    private static final Logger logger = Logger.getLogger(InstaProp.class.getName());
 
-  public static String get(String key){
-    if(prop == null){
-      prop = new Properties();
-      try {
-        prop.load(InstaProp.class.getClassLoader().getResourceAsStream("insta4j.properties"));
-      } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      }
+    private static Properties prop;
+    private static int retry = 3;
+
+    public static String get(String key) {
+        if (prop == null || prop.size() == 0) {
+            prop = new Properties();
+            // retrying to load properties for a maximum of 3 times
+            if (retry > 0) {
+                try {
+                    prop.load(InstaProp.class.getClassLoader().getResourceAsStream("insta4j.properties"));
+                } catch (Exception e) {
+                    retry--;
+                    logger.log(Level.SEVERE, "Failed to load insta4j properties", e);
+                }
+            }
+        }
+        return prop.getProperty(key);
     }
-    return prop.getProperty(key);
-  }
 }

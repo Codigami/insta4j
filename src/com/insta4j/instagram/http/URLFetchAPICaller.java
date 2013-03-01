@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 import com.insta4j.instagram.InstaProp;
+import com.insta4j.instagram.util.Constants;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.codehaus.jackson.JsonParseException;
@@ -29,68 +30,71 @@ import com.insta4j.instagram.util.JSONToObjectTransformer;
 
 public class URLFetchAPICaller implements APICallerInterface {
 
-	public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
+    public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
 
-		URLFetchService fetchService = URLFetchServiceFactory.getURLFetchService();
-		URL fetchURL = null;
+        URLFetchService fetchService = URLFetchServiceFactory.getURLFetchService();
+        URL fetchURL = null;
 
-		HTTPResponse response = null;
-		String responseString = null;
-		String constructedParams = null;
+        HTTPResponse response = null;
+        String responseString = null;
+        String constructedParams = null;
 
 
+        if (nameValuePairs != null) {
+            constructedParams = constructParams(nameValuePairs);
 
-			if (nameValuePairs != null) {
-				constructedParams = constructParams(nameValuePairs);
-
-				if (url.contains("?")) {
-					url = url.concat("&" + constructedParams);
-				} else {
-					url = url.concat("?" + constructedParams);
-				}
-			}
-
-      int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
-      while (retry > 0){
-        try {
-          fetchURL = new URL(url);
-          response = fetchService.fetch(fetchURL);
-          break;
-        } catch (IOException ex) {
-          retry --;
-          if(retry <= 0){
-            throw new InstagramException("IO Exception while calling facebook!", ex);
-          }
+            if (url.contains("?")) {
+                url = url.concat("&" + constructedParams);
+            } else {
+                url = url.concat("?" + constructedParams);
+            }
         }
-      }
 
-			int statusCode = response.getResponseCode();
-			if (statusCode != HttpStatus.SC_OK) {
-				// InstagramError error = new InstagramError(statusCode,
-				// "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
-				responseString = new String(response.getContent());
-				throw new InstagramException(JSONToObjectTransformer.getError(responseString, statusCode));
-			}
-			responseString = new String(response.getContent());
+        int retry = Constants.NETWORK_FAILURE_RETRY_COUNT;
+        String strRetryCount = InstaProp.get(Constants.KEY_NETWORK_FAILURE_RETRY_COUNT);
+        if (strRetryCount != null) {
+            retry = Integer.parseInt(strRetryCount);
+        }
+        while (retry > 0) {
+            try {
+                fetchURL = new URL(url);
+                response = fetchService.fetch(fetchURL);
+                break;
+            } catch (IOException ex) {
+                retry--;
+                if (retry <= 0) {
+                    throw new InstagramException("IO Exception while calling facebook!", ex);
+                }
+            }
+        }
+
+        int statusCode = response.getResponseCode();
+        if (statusCode != HttpStatus.SC_OK) {
+            // InstagramError error = new InstagramError(statusCode,
+            // "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
+            responseString = new String(response.getContent());
+            throw new InstagramException(JSONToObjectTransformer.getError(responseString, statusCode));
+        }
+        responseString = new String(response.getContent());
 
 
-		// if response string contains accessToken=xxx remove it!
-		// responseString = Util.replaceAccessToken(responseString, nameValuePairs);
+        // if response string contains accessToken=xxx remove it!
+        // responseString = Util.replaceAccessToken(responseString, nameValuePairs);
 
-			ObjectMapper mapper = new ObjectMapper();
-	    Map<String, Object> responseMap = null;
-	    try {
-				responseMap = mapper.readValue(responseString, Map.class);
-			} catch (JsonParseException e) {
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}    
-	    
-    return responseMap;
-	}
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> responseMap = null;
+        try {
+            responseMap = mapper.readValue(responseString, Map.class);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return responseMap;
+    }
 
 	/**
 	 * @param url
@@ -98,59 +102,63 @@ public class URLFetchAPICaller implements APICallerInterface {
 	 * @return
 	 * @throws InstagramException
 	 */
-	public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
+    public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
 
-		String content = null;
-		String constructedParams = null;
-		int statusCode = 0;
-		HttpURLConnection connection = null;
-    int retry = Integer.parseInt(InstaProp.get("NETWORK_FAILURE_RETRY_COUNT"));
-    while (retry > 0){
-      try {
-        URL posturl = new URL(url);
-        connection = (HttpURLConnection) posturl.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        // connection.setConnectTimeout(10000);
-        // connection.setReadTimeout(10000);
-
-        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-
-        constructedParams = constructParams(nameValuePairs);
-
-        writer.write(constructedParams);
-        writer.close();
-
-        statusCode = connection.getResponseCode();
-        if (statusCode != HttpURLConnection.HTTP_OK) {
-          // "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
-          content = getResponse(connection);
-          throw new InstagramException(JSONToObjectTransformer.getError(content, statusCode));
-        } else {
-          content = getResponse(connection);
+        String content = null;
+        String constructedParams = null;
+        int statusCode = 0;
+        HttpURLConnection connection = null;
+        int retry = Constants.NETWORK_FAILURE_RETRY_COUNT;
+        String strRetryCount = InstaProp.get(Constants.KEY_NETWORK_FAILURE_RETRY_COUNT);
+        if (strRetryCount != null) {
+            retry = Integer.parseInt(strRetryCount);
         }
-        break;
-      } catch (MalformedURLException e) {
-        throw new InstagramException("Malformed URL Exception while calling Instagram!", e);
-      } catch (IOException e) {
-          retry --;
-          if(retry <= 0){
-            throw new InstagramException("IO Exception while calling facebook!", e);
-          }
-          if (connection != null) {
-            connection.disconnect();
-            connection = null;
-          }
-      } finally {
-        if (connection != null) {
-          connection.disconnect();
+        while (retry > 0) {
+            try {
+                URL posturl = new URL(url);
+                connection = (HttpURLConnection) posturl.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestMethod("POST");
+                // connection.setConnectTimeout(10000);
+                // connection.setReadTimeout(10000);
+
+                OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+
+                constructedParams = constructParams(nameValuePairs);
+
+                writer.write(constructedParams);
+                writer.close();
+
+                statusCode = connection.getResponseCode();
+                if (statusCode != HttpURLConnection.HTTP_OK) {
+                    // "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
+                    content = getResponse(connection);
+                    throw new InstagramException(JSONToObjectTransformer.getError(content, statusCode));
+                } else {
+                    content = getResponse(connection);
+                }
+                break;
+            } catch (MalformedURLException e) {
+                throw new InstagramException("Malformed URL Exception while calling Instagram!", e);
+            } catch (IOException e) {
+                retry--;
+                if (retry <= 0) {
+                    throw new InstagramException("IO Exception while calling facebook!", e);
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                    connection = null;
+                }
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
         }
-      }
+
+        return content;
+
     }
-
-    return content;
-
-	}
 
 	private String getResponse(HttpURLConnection connection) throws IOException {
 		String content;

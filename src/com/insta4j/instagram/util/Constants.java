@@ -48,4 +48,7 @@ public class Constants {
 
 	public static final String PARAM_DISPLAY = "display";
 
+    public static final int NETWORK_FAILURE_RETRY_COUNT = 2;
+    public static final String KEY_NETWORK_FAILURE_RETRY_COUNT = "NETWORK_FAILURE_RETRY_COUNT";
+
 }
