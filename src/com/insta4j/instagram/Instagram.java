@@ -110,6 +110,30 @@ public class Instagram implements Serializable {
     }
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/followed-by", nameValuePairs);
   }
+
+  /**
+   * Search for a user by name
+   *
+   * @param query
+   * @param count
+   * @return
+   * @throws InstagramException
+   */
+  public Map<String, Object> search(String query, Integer count, String cursor) throws InstagramException {
+    NameValuePair[] nameValuePairs = null;
+    if(cursor != null){
+      nameValuePairs = new NameValuePair[4];
+    }else{
+      nameValuePairs = new NameValuePair[3];
+    }
+    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+    nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_QUERY, query);
+    nameValuePairs[2] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
+    if(cursor != null){
+      nameValuePairs[3] = new BasicNameValuePair(Constants.PARAM_CURSOR, cursor);
+    }
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/search" , nameValuePairs);
+  }
 	
 	public OAuthAccessToken getAuthAccessToken() {
 		return authAccessToken;

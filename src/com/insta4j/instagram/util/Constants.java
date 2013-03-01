@@ -30,6 +30,8 @@ public class Constants {
 
 	public static final String PARAM_ACTION = "action";
 	public static final String PARAM_CURSOR = "cursor";
+	public static final String PARAM_QUERY = "q";
+	public static final String PARAM_COUNT = "count";
 
 	//this param value pair is required when redirecting the user to Instagram for authentication
 	public static final String PARAM_RESPONSE_TYPE = "response_type";
