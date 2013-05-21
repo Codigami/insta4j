@@ -8,6 +8,7 @@ public class InstagramError implements Serializable {
 	
 	private int errorCode;
 	private String errorMsg;
+	private String errorType;
 	private RequestArg[] requestArgs;
 
 	/* Keeping a no args constructor*/
@@ -15,14 +16,13 @@ public class InstagramError implements Serializable {
 		super();
 	}
 
-	public InstagramError(int errorCode, String errorMsg, RequestArg[] requestArgs) {
+	public InstagramError(int errorCode, String errorMsg, String errorType, RequestArg[] requestArgs) {
 		super();
 		this.errorCode = errorCode;
 		this.errorMsg = errorMsg;
+		this.errorType = errorType;
 		this.requestArgs = requestArgs;
 	}
-
-
 
 	public int getErrorCode() {
 		return errorCode;
@@ -36,4 +36,7 @@ public class InstagramError implements Serializable {
 		return requestArgs;
 	}
 
+	public String getErrorType() {
+		return errorType;
+	}
 }
