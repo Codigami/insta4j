@@ -115,7 +115,7 @@ public class InstagramFactory extends OAuthFactory implements Serializable {
 	 * @throws InstagramException 
 	 * @throws Exception
 	 */
-	public Map<String, Object> getOAuthAccessToken(String code, String callbackURL) throws InstagramException{
+	public Map<String, Object> getOAuthAccessToken(String code, String callbackURL) throws InstagramException, IOException {
 		
 		//We make a call with the provided code, client_id, client_secret and redirect_uri
 		
@@ -124,17 +124,9 @@ public class InstagramFactory extends OAuthFactory implements Serializable {
     String rawData = caller.postData(Constants.ACCESS_TOKEN_URL,nameValuePairs);
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String,Object> userData = null;
-		try {
-			userData = mapper.readValue(rawData, Map.class);
+		userData = mapper.readValue(rawData, Map.class);
 			//accessToken = new OAuthAccessToken((String)userData.get("access_token"));
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+
 		return userData;
 	}
 	

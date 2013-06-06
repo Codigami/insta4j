@@ -50,7 +50,7 @@ public class APICaller implements APICallerInterface {
 		
 	}
 	
-	private synchronized static HttpClient getHttpClient() {
+	private synchronized static HttpClient getHttpClient() throws IOException {
 		if(null==httpClient){
 
 			PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
@@ -65,26 +65,20 @@ public class APICaller implements APICallerInterface {
 			Credentials credentials = null;
 			
 			//Check if username and password exists in any resource file
-			try {
-				InputStream inputStream = ClassLoader.getSystemResourceAsStream("insta4j.properties");
-				if(inputStream != null) {
-					Properties properties = new Properties();
-					properties.load(inputStream);
-					inputStream.close();
-				
-					username = properties.getProperty("client.proxy.username");
-					password = properties.getProperty("client.proxy.password");
-					host = properties.getProperty("client.proxy.host");
-					if(properties.getProperty("client.proxy.port") != null){
-						port = Integer.parseInt(properties.getProperty("client.proxy.port"));
-					}
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream("insta4j.properties");
+			if(inputStream != null) {
+				Properties properties = new Properties();
+				properties.load(inputStream);
+				inputStream.close();
+
+				username = properties.getProperty("client.proxy.username");
+				password = properties.getProperty("client.proxy.password");
+				host = properties.getProperty("client.proxy.host");
+				if(properties.getProperty("client.proxy.port") != null){
+					port = Integer.parseInt(properties.getProperty("client.proxy.port"));
 				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			
+
 			if(username != null || password != null){
 				credentials = new UsernamePasswordCredentials(username, password);
                 ((DefaultHttpClient) httpClient).getCredentialsProvider()
@@ -130,7 +124,7 @@ public class APICaller implements APICallerInterface {
 	}
 	
 	
-	public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException{
+	public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException, IOException {
 		HttpClient client = APICaller.getHttpClient();
 		String response = null;
 		
@@ -193,7 +187,7 @@ public class APICaller implements APICallerInterface {
           } catch (IOException ex) {
             retry --;
             if(retry <= 0){
-              throw new InstagramException("IO Exception while calling facebook!", ex);
+	            throw ex;
             }
           }
         }
@@ -223,7 +217,7 @@ public class APICaller implements APICallerInterface {
  }
 
 
-    public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
+    public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException, IOException {
 
     		List<NameValuePair> nameValuePairsList = new ArrayList<NameValuePair>();
         HttpClient client = APICaller.getHttpClient();
@@ -256,7 +250,7 @@ public class APICaller implements APICallerInterface {
           } catch (IOException ex) {
             retry --;
             if(retry <= 0){
-              throw new InstagramException("IO Exception while calling facebook!", ex);
+	            throw ex;
             }
           }
         }
@@ -272,33 +266,28 @@ public class APICaller implements APICallerInterface {
         return response;
     }
    
-    public String deleteData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
+    public String deleteData(String url, NameValuePair[] nameValuePairs) throws IOException, InstagramException {
 
       HttpClient client = APICaller.getHttpClient();
       String response = null;
 
       HttpDelete deleteMethod = null;
-      try {
-          deleteMethod = new HttpDelete(url);
+      deleteMethod = new HttpDelete(url);
 
-          if (nameValuePairs != null) {
-              HttpParams httpParams = new BasicHttpParams();
-              for (NameValuePair pair : nameValuePairs) {
-                  httpParams.setParameter(pair.getName(), pair.getValue());
-              }
-              deleteMethod.setParams(httpParams);
+      if (nameValuePairs != null) {
+          HttpParams httpParams = new BasicHttpParams();
+          for (NameValuePair pair : nameValuePairs) {
+              httpParams.setParameter(pair.getName(), pair.getValue());
           }
-
-          HttpResponse httpResponse = client.execute(deleteMethod);
-          int statusCode = httpResponse.getStatusLine().getStatusCode();
-          response = EntityUtils.toString(httpResponse.getEntity());
-          if (statusCode != HttpStatus.SC_OK) {
-    				throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
-          }
-      } catch (IOException e) {
-          throw new InstagramException("IO Exception while calling facebook!", e);
+          deleteMethod.setParams(httpParams);
       }
 
+      HttpResponse httpResponse = client.execute(deleteMethod);
+      int statusCode = httpResponse.getStatusLine().getStatusCode();
+      response = EntityUtils.toString(httpResponse.getEntity());
+      if (statusCode != HttpStatus.SC_OK) {
+        throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
+      }
       return response;
   } 
     
