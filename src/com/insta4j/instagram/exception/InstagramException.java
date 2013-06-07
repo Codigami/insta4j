@@ -6,6 +6,10 @@ public class InstagramException extends Exception {
 	
 	private InstagramError error;
 
+  public InstagramException(String msg, Exception exception) {
+      super(msg, exception);
+  }
+
   public InstagramException(InstagramError error) {
 		super();
 		this.error = error;

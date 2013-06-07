@@ -34,7 +34,13 @@ public class JSONToObjectTransformer {
 	public static <E> E getObject(String json, Class<E> e) throws InstagramException {
 		//If facebook returns an error then throw the error
 		errorCheck(json);
-		return gson.fromJson(json, e);
+		
+		try {
+			return gson.fromJson(json, e);
+		} catch(Exception exception){
+			logger.log(Level.SEVERE, "Data received from Facebook for class "+e.getName()+" is "+json,exception);
+			throw new InstagramException("Error while converting object. Send this to nischal@grabinbox.com : "+json, exception);
+		}
 	}
 
 	public static <E> E getObject(String json, Type type) throws InstagramException {
@@ -43,10 +49,17 @@ public class JSONToObjectTransformer {
 		return gson.<E>fromJson(json, type);
 	}
 
-	private static void errorCheck(String json) {
+	private static void errorCheck(String json) throws InstagramException {
 		if(json.contains("error_code")){
+			
 			InstagramError error = null;
-			error = gson.fromJson(json, InstagramError.class);
+			try {
+				error = gson.fromJson(json, InstagramError.class);
+			} catch(Exception exception){
+				throw new InstagramException("Error in converting facebook error to FacebookError object! Facebook data is: "+json,exception);
+			}
+			
+			throw new InstagramException(error);
 		}
 	}
 	

@@ -54,18 +54,18 @@ public class Instagram implements Serializable {
 	 * @return
 	 * @throws InstagramException
 	 */
-	public Map<String, Object> getUser(String fbId) throws InstagramException, IOException {
+	public Map<String, Object> getUser(String fbId) throws InstagramException {
 		NameValuePair[] nameValuePairs = { new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()) };
 		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/", nameValuePairs);
 	}
 
-  public String relationship(String fbId, Relationship relationship) throws InstagramException, IOException {
+  public String relationship(String fbId, Relationship relationship) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[1];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
     return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
   }
 
-  public Map<String, Object>  relationship(String fbId) throws InstagramException, IOException {
+  public Map<String, Object>  relationship(String fbId) throws InstagramException {
     NameValuePair[] nameValuePairs =  new NameValuePair[1];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
@@ -78,7 +78,7 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public Map<String, Object> follows(String fbId, String cursor) throws InstagramException, IOException {
+  public Map<String, Object> follows(String fbId, String cursor) throws InstagramException {
     NameValuePair[] nameValuePairs = null;
     if(cursor == null){
       nameValuePairs = new NameValuePair[1];
@@ -98,7 +98,7 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public Map<String, Object> followedBy(String fbId, String cursor) throws InstagramException, IOException {
+  public Map<String, Object> followedBy(String fbId, String cursor) throws InstagramException {
     NameValuePair[] nameValuePairs = null;
     if(cursor == null){
       nameValuePairs = new NameValuePair[1];
@@ -119,7 +119,7 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public Map<String, Object> search(String query, Integer count, String cursor) throws InstagramException, IOException {
+  public Map<String, Object> search(String query, Integer count, String cursor) throws InstagramException {
     NameValuePair[] nameValuePairs = null;
     if(cursor != null){
       nameValuePairs = new NameValuePair[4];
@@ -148,7 +148,7 @@ public class Instagram implements Serializable {
 	 * @return
 	 * @throws InstagramException
 	 */
-	public Map<String, Object> pullData(String url, NameValuePair[] nameValuePairs) throws InstagramException, IOException {
+	public Map<String, Object> pullData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
 		// APICaller would retrieve the json string object from instagram by making a https call
 		// Once the json string object is obtaind, it is passed to obj transformer and the right object
 		// is retrieved
@@ -164,7 +164,7 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException, IOException {
+  public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
     // APICaller would retrieve the json string object from instagram by making a https call
     // Once the json string object is obtaind, it is passed to obj transformer and the right object
     // is retrieved

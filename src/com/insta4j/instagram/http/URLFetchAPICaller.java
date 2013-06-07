@@ -30,7 +30,7 @@ import com.insta4j.instagram.util.JSONToObjectTransformer;
 
 public class URLFetchAPICaller implements APICallerInterface {
 
-    public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException, IOException {
+    public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
 
         URLFetchService fetchService = URLFetchServiceFactory.getURLFetchService();
         URL fetchURL = null;
@@ -63,7 +63,7 @@ public class URLFetchAPICaller implements APICallerInterface {
             } catch (IOException ex) {
                 retry--;
                 if (retry <= 0) {
-	                throw ex;
+                    throw new InstagramException("IO Exception while calling facebook!", ex);
                 }
             }
         }
@@ -102,7 +102,7 @@ public class URLFetchAPICaller implements APICallerInterface {
 	 * @return
 	 * @throws InstagramException
 	 */
-    public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException, IOException {
+    public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
 
         String content = null;
         String constructedParams = null;
@@ -138,10 +138,12 @@ public class URLFetchAPICaller implements APICallerInterface {
                     content = getResponse(connection);
                 }
                 break;
-            }catch (IOException e) {
+            } catch (MalformedURLException e) {
+                throw new InstagramException("Malformed URL Exception while calling Instagram!", e);
+            } catch (IOException e) {
                 retry--;
                 if (retry <= 0) {
-	                throw e;
+                    throw new InstagramException("IO Exception while calling facebook!", e);
                 }
                 if (connection != null) {
                     connection.disconnect();
