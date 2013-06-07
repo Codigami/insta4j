@@ -63,7 +63,7 @@ public class URLFetchAPICaller implements APICallerInterface {
             } catch (IOException ex) {
                 retry--;
                 if (retry <= 0) {
-                    throw new InstagramException("IO Exception while calling facebook!", ex);
+	                throw new InstagramException(-1, ex.getMessage(), "Undefined", ex);
                 }
             }
         }
@@ -86,11 +86,11 @@ public class URLFetchAPICaller implements APICallerInterface {
         try {
             responseMap = mapper.readValue(responseString, Map.class);
         } catch (JsonParseException e) {
-            e.printStackTrace();
+	        throw new InstagramException(-1, e.getMessage(), "Undefined", e);
         } catch (JsonMappingException e) {
-            e.printStackTrace();
+	        throw new InstagramException(-1, e.getMessage(), "Undefined", e);
         } catch (IOException e) {
-            e.printStackTrace();
+	        throw new InstagramException(-1, e.getMessage(), "Undefined", e);
         }
 
         return responseMap;
@@ -139,11 +139,11 @@ public class URLFetchAPICaller implements APICallerInterface {
                 }
                 break;
             } catch (MalformedURLException e) {
-                throw new InstagramException("Malformed URL Exception while calling Instagram!", e);
+                throw new InstagramException(-1, e.getMessage(), "Undefined", e);
             } catch (IOException e) {
                 retry--;
                 if (retry <= 0) {
-                    throw new InstagramException("IO Exception while calling facebook!", e);
+	                throw new InstagramException(-1, e.getMessage(), "Undefined", e);
                 }
                 if (connection != null) {
                     connection.disconnect();
@@ -155,9 +155,7 @@ public class URLFetchAPICaller implements APICallerInterface {
                 }
             }
         }
-
         return content;
-
     }
 
 	private String getResponse(HttpURLConnection connection) throws IOException {
@@ -243,6 +241,7 @@ public class URLFetchAPICaller implements APICallerInterface {
 			}
 
 		} catch (IOException e) {
+			throw new InstagramException(-1, e.getMessage(), "Undefined", e);
 		}
 
 		return content;

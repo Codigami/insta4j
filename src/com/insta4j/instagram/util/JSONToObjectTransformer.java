@@ -38,8 +38,8 @@ public class JSONToObjectTransformer {
 		try {
 			return gson.fromJson(json, e);
 		} catch(Exception exception){
-			logger.log(Level.SEVERE, "Data received from Facebook for class "+e.getName()+" is "+json,exception);
-			throw new InstagramException("Error while converting object. Send this to nischal@grabinbox.com : "+json, exception);
+			logger.log(Level.SEVERE, "Data received from Instagram for class "+e.getName()+" is "+json,exception);
+			throw new InstagramException(-1, exception.getMessage(), "Undefined", exception);
 		}
 	}
 
@@ -56,7 +56,8 @@ public class JSONToObjectTransformer {
 			try {
 				error = gson.fromJson(json, InstagramError.class);
 			} catch(Exception exception){
-				throw new InstagramException("Error in converting facebook error to FacebookError object! Facebook data is: "+json,exception);
+				logger.log(Level.SEVERE, "Data received from Instagram. response is "+json,exception);
+				throw new InstagramException(-1, exception.getMessage(), "Undefined", exception);
 			}
 			
 			throw new InstagramException(error);

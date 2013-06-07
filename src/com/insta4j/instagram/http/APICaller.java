@@ -50,7 +50,7 @@ public class APICaller implements APICallerInterface {
 		
 	}
 	
-	private synchronized static HttpClient getHttpClient() {
+	private synchronized static HttpClient getHttpClient() throws InstagramException {
 		if(null==httpClient){
 
 			PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
@@ -80,9 +80,9 @@ public class APICaller implements APICallerInterface {
 					}
 				}
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				throw new InstagramException(-1, e.getMessage(), "Undefined", e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new InstagramException(-1, e.getMessage(), "Undefined", e);
 			}
 			
 			if(username != null || password != null){
@@ -193,7 +193,7 @@ public class APICaller implements APICallerInterface {
           } catch (IOException ex) {
             retry --;
             if(retry <= 0){
-              throw new InstagramException("IO Exception while calling facebook!", ex);
+	            throw new InstagramException(-1, ex.getMessage(), "Undefined", ex);
             }
           }
         }
@@ -211,12 +211,12 @@ public class APICaller implements APICallerInterface {
         try {
 					responseMap = mapper.readValue(response, Map.class);
 				} catch (JsonParseException e) {
-					e.printStackTrace();
+	        throw new InstagramException(-1, e.getMessage(), "Undefined", e);
 				} catch (JsonMappingException e) {
-					e.printStackTrace();
+	        throw new InstagramException(-1, e.getMessage(), "Undefined", e);
 				} catch (IOException e) {
-					e.printStackTrace();
-				}    
+	        throw new InstagramException(-1, e.getMessage(), "Undefined", e);
+				}
         
         
 		return responseMap;
@@ -256,7 +256,7 @@ public class APICaller implements APICallerInterface {
           } catch (IOException ex) {
             retry --;
             if(retry <= 0){
-              throw new InstagramException("IO Exception while calling facebook!", ex);
+	            throw new InstagramException(-1, ex.getMessage(), "Undefined", ex);
             }
           }
         }
@@ -296,7 +296,7 @@ public class APICaller implements APICallerInterface {
     				throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
           }
       } catch (IOException e) {
-          throw new InstagramException("IO Exception while calling facebook!", e);
+	      throw new InstagramException(-1, e.getMessage(), "Undefined", e);
       }
 
       return response;
