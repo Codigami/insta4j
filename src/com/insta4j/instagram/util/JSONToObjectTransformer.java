@@ -1,17 +1,12 @@
 package com.insta4j.instagram.util;
 
+import com.google.gson.*;
+import com.insta4j.instagram.exception.InstagramError;
+import com.insta4j.instagram.exception.InstagramException;
+
 import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.appengine.repackaged.org.json.JSONException;
-import com.google.appengine.repackaged.org.json.JSONObject;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.insta4j.instagram.exception.HttpError;
-import com.insta4j.instagram.exception.InstagramError;
-import com.insta4j.instagram.exception.InstagramException;
 
 /**
  * Convert JSON to appropriate objects
@@ -23,7 +18,7 @@ public class JSONToObjectTransformer {
 
 	
 	private static Logger logger = Logger.getLogger(JSONToObjectTransformer.class.getName());
-	
+
 	/**
 	 * Gson would be singleton. Please take care not to include rules in the builder that aren't common for the entire
 	 * API.
@@ -34,7 +29,7 @@ public class JSONToObjectTransformer {
 	public static <E> E getObject(String json, Class<E> e) throws InstagramException {
 		//If facebook returns an error then throw the error
 		errorCheck(json);
-		
+
 		try {
 			return gson.fromJson(json, e);
 		} catch(Exception exception){
@@ -65,15 +60,18 @@ public class JSONToObjectTransformer {
 	}
 	
 	public static InstagramError getError(String response, int statusCode) {
-    try {
-      JSONObject jsonObject = new JSONObject(response);
-      JSONObject obj = jsonObject.getJSONObject("meta");
-      return new InstagramError(statusCode,
-		      String.valueOf(obj.getInt("code")) + ": " + obj.getString("error_type") + ": " + obj.getString("error_message"),
-		      obj.getString("error_type"),
-		      null);
-    }catch (JSONException e){}
-    return new InstagramError(statusCode, "There was some error. Please try again", null, null);
+		JsonParser parser = new JsonParser();
+		JsonObject jsonObject = (JsonObject) parser.parse(response);
+		if (jsonObject != null) {
+			JsonObject obj = jsonObject.getAsJsonObject("meta");
+			if(obj != null)  {
+				return new InstagramError(statusCode,
+						String.valueOf(obj.get("code").getAsInt()) + ": " + obj.get("error_type").getAsString() + ": " + obj.get("error_message").getAsString(),
+						obj.get("error_type").getAsString(),
+						null);
+			}
+		}
+		return new InstagramError(statusCode, "There was some error. Please try again", null, null);
 	}
 	
 	/*public static void main(String[] args) {
