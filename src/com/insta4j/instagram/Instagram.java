@@ -59,6 +59,20 @@ public class Instagram implements Serializable {
 		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/", nameValuePairs);
 	}
 
+  /**
+   * Returns a Instagram user's feed.
+   *
+   * @param fbId
+   * @return
+   * @throws InstagramException
+   */
+  public Map<String, Object> getFeed(String fbId, Integer count) throws InstagramException {
+    NameValuePair[] nameValuePairs = new NameValuePair[2];
+    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+    nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/media/recent/?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+  }
+
   public String relationship(String fbId, Relationship relationship) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[1];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
