@@ -1,19 +1,19 @@
 package com.insta4j.instagram;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import com.insta4j.instagram.enums.Relationship;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import com.insta4j.instagram.enums.HttpClientType;
+import com.insta4j.instagram.enums.Relationship;
 import com.insta4j.instagram.exception.InstagramException;
 import com.insta4j.instagram.http.APICallerFactory;
 import com.insta4j.instagram.http.APICallerInterface;
 import com.insta4j.instagram.util.Constants;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * This is the main Instagram class that will have methods which return instagram data as well as
@@ -66,12 +66,51 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public Map<String, Object> getFeed(String fbId, Integer count) throws InstagramException {
-    NameValuePair[] nameValuePairs = new NameValuePair[2];
-    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-    nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
+  public Map<String, Object> getFeed(String fbId, Integer count,String max_id,String min_id) throws InstagramException {
+	  List<BasicNameValuePair> basicNameValuePairList = new ArrayList<BasicNameValuePair>();
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()));
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count)));
+	  if(max_id != null){
+		  basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_MAX_ID, max_id));
+	  }
+	  if(min_id != null){
+		  basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_MIN_ID, min_id));
+	  }
+
+	  NameValuePair[] nameValuePairs = new NameValuePair[basicNameValuePairList.size()];
+	  for(int i=0; i< basicNameValuePairList.size(); i++){
+		  nameValuePairs[i] = basicNameValuePairList.get(i);
+	  }
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/media/recent/?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+
   }
+
+	public Map<String, Object> getLikes(String mediaId) throws InstagramException {
+    NameValuePair[] nameValuePairs = new NameValuePair[1];
+    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/likes?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+  }
+
+	public Map<String, Object> getComments(String mediaId) throws InstagramException {
+		NameValuePair[] nameValuePairs = new NameValuePair[1];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/comments?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+	}
+
+	public Map<String, Object> getMediaLiked(Integer count, String MAX_LIKE_ID) throws InstagramException {
+		NameValuePair[] nameValuePairs = new NameValuePair[3];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
+		nameValuePairs[2] = new BasicNameValuePair(Constants.PARAM_MAX_LIKE_ID, MAX_LIKE_ID);
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+	}
+
+	public Map<String, Object> getMediaLiked(Integer count) throws InstagramException {
+		NameValuePair[] nameValuePairs = new NameValuePair[2];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+	}
 
   public String relationship(String fbId, Relationship relationship) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[1];
@@ -84,6 +123,19 @@ public class Instagram implements Serializable {
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
   }
+
+	public String  like(String userId) throws InstagramException {
+    NameValuePair[] nameValuePairs =  new NameValuePair[1];
+    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+    return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" +userId+"/likes", nameValuePairs);
+  }
+
+	public String  unlike(String userId) throws InstagramException {
+		NameValuePair[] nameValuePairs =  new NameValuePair[1];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		return deleteData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" +userId+"/likes", nameValuePairs);
+	}
+
 
   /**
    * Get the list of users this user follows.
@@ -183,6 +235,13 @@ public class Instagram implements Serializable {
     // Once the json string object is obtaind, it is passed to obj transformer and the right object
     // is retrieved
     return caller.postData(url, nameValuePairs);
+  }
+
+	public String deleteData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
+    // APICaller would retrieve the json string object from instagram by making a https call
+    // Once the json string object is obtaind, it is passed to obj transformer and the right object
+    // is retrieved
+    return caller.deleteData(url, nameValuePairs);
   }
 	
 }

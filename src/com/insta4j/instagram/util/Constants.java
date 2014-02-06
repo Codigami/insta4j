@@ -32,6 +32,11 @@ public class Constants {
 	public static final String PARAM_CURSOR = "cursor";
 	public static final String PARAM_QUERY = "q";
 	public static final String PARAM_COUNT = "count";
+	public static final String PARAM_MAX_LIKE_ID = "max_like_id";   //Return media liked before this id
+	public static final String PARAM_MIN_ID = "min_id";   //Return media earlier than this max_id
+	public static final String PARAM_MAX_ID = "max_id";   //Return media liked before this id
+
+
 
 	//this param value pair is required when redirecting the user to Instagram for authentication
 	public static final String PARAM_RESPONSE_TYPE = "response_type";
