@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import com.insta4j.instagram.InstaProp;
 import com.insta4j.instagram.util.Constants;
+import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -245,7 +246,7 @@ public class APICaller implements APICallerInterface {
                   nameValuePairsList.add(new BasicNameValuePair(pair.getName(), pair.getValue()));
               }
 
-              UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(nameValuePairsList);
+              UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(nameValuePairsList, Consts.UTF_8);
               postMethod.setEntity(encodedFormEntity);
             }
 
@@ -266,9 +267,6 @@ public class APICaller implements APICallerInterface {
           throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
         }
             
-        //shut down the connection manager
-        client.getConnectionManager().shutdown();
-
         return response;
     }
    
