@@ -81,20 +81,20 @@ public class Instagram implements Serializable {
 	  for(int i=0; i< basicNameValuePairList.size(); i++){
 		  nameValuePairs[i] = basicNameValuePairList.get(i);
 	  }
-    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/media/recent/?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/media/recent", nameValuePairs);
 
   }
 
 	public Map<String, Object> getLikes(String mediaId) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[1];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/likes?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/likes", nameValuePairs);
   }
 
 	public Map<String, Object> getComments(String mediaId) throws InstagramException {
 		NameValuePair[] nameValuePairs = new NameValuePair[1];
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/comments?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/comments", nameValuePairs);
 	}
 
 	public Map<String, Object> getMediaLiked(Integer count, String MAX_LIKE_ID) throws InstagramException {
@@ -102,20 +102,21 @@ public class Instagram implements Serializable {
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
 		nameValuePairs[2] = new BasicNameValuePair(Constants.PARAM_MAX_LIKE_ID, MAX_LIKE_ID);
-		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked", nameValuePairs);
 	}
 
 	public Map<String, Object> getMediaLiked(Integer count) throws InstagramException {
 		NameValuePair[] nameValuePairs = new NameValuePair[2];
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count));
-		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked", nameValuePairs);
 	}
 
   public String relationship(String fbId, Relationship relationship) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[1];
-    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
-    return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship?access_token=" + this.authAccessToken.getAccessToken(), nameValuePairs);
+      nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+      nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
+    return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
   }
 
   public Map<String, Object>  relationship(String fbId) throws InstagramException {
