@@ -114,7 +114,7 @@ public class Instagram implements Serializable {
 		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked", nameValuePairs);
 	}
 
-	public String relationship(String fbId, Relationship relationship) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+	public String relationship(String fbId, Relationship relationship) throws InstagramException{
 		NameValuePair[] nameValuePairs = new NameValuePair[2];
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
@@ -131,7 +131,7 @@ public class Instagram implements Serializable {
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException
 	 */
-	public String relationship(String fbId, Relationship relationship, Map <String ,String > headers) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+	public String relationship(String fbId, Relationship relationship, Map <String ,String > headers) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[3];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 	  nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
@@ -145,7 +145,7 @@ public class Instagram implements Serializable {
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
   }
 
-	public String  like(String userId) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+	public String  like(String userId) throws InstagramException{
 		NameValuePair[] nameValuePairs =  new NameValuePair[1];
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 		return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" +userId+"/likes", nameValuePairs);
@@ -160,7 +160,7 @@ public class Instagram implements Serializable {
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException
 	 */
-	public String  like(String userId, Map<String,String> headers) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+	public String  like(String userId, Map<String,String> headers) throws InstagramException {
     NameValuePair[] nameValuePairs =  new NameValuePair[2];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_IPADDRESS, headers.get("ipaddress"));
@@ -267,7 +267,7 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException, NoSuchAlgorithmException, InvalidKeyException {
+  public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
     // APICaller would retrieve the json string object from instagram by making a https call
     // Once the json string object is obtaind, it is passed to obj transformer and the right object
     // is retrieved
