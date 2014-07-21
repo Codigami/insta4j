@@ -6,7 +6,6 @@ import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -40,7 +39,7 @@ public class InstagramUtil {
 	public static String getClientSecret(){
 
 		try {
-			InputStream input = new FileInputStream("insta4jprop.properties");
+			InputStream input = InstagramUtil.class.getClassLoader().getResourceAsStream("insta4jprop.properties");
 			Properties prop = new Properties();
 			prop.load(input);
 			return prop.getProperty(Constants.PARAM_CLIENT_SECRET);
