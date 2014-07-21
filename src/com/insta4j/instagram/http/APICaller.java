@@ -1,17 +1,10 @@
 package com.insta4j.instagram.http;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.insta4j.instagram.InstaProp;
+import com.insta4j.instagram.exception.InstagramException;
 import com.insta4j.instagram.util.Constants;
+import com.insta4j.instagram.util.InstagramUtil;
+import com.insta4j.instagram.util.JSONToObjectTransformer;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -34,8 +27,15 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.insta4j.instagram.exception.InstagramException;
-import com.insta4j.instagram.util.JSONToObjectTransformer;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * APICaller will make http requests, obtain that response and return it without processing. Basically, the raw response is returned by every method.
@@ -238,7 +238,23 @@ public class APICaller implements APICallerInterface {
         if (strRetryCount != null) {
             retry = Integer.parseInt(strRetryCount);
         }
-        while (retry > 0){
+
+	    //If Ipaddress is there we are signing request
+		    String ipAddress = null;
+	      if(nameValuePairs != null){
+		      for (NameValuePair pair : nameValuePairs) {
+			      if(pair.getName().equals(Constants.PARAM_IPADDRESS)){
+				      ipAddress = pair.getValue();
+			      }
+		      }
+		      if(ipAddress != null){
+			      String digest = InstagramUtil.createSHAKey(ipAddress);
+			      postMethod.setHeader("X-Insta-Forwarded-For", ipAddress+ "|" +digest);
+		      }
+	      }
+
+
+	    while (retry > 0){
           try {
             if (nameValuePairs != null) {
               //HttpParams httpParams = new BasicHttpParams();

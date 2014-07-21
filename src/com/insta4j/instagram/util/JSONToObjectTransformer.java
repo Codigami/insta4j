@@ -69,6 +69,12 @@ public class JSONToObjectTransformer {
 						String.valueOf(obj.get("code").getAsInt()) + ": " + obj.get("error_type").getAsString() + ": " + obj.get("error_message").getAsString(),
 						obj.get("error_type").getAsString(),
 						null);
+			} else if (jsonObject != null){
+				obj = jsonObject;
+				return new InstagramError(statusCode,
+						String.valueOf(obj.get("code").getAsInt()) + ": " + obj.get("error_type").getAsString() + ": " + obj.get("error_message").getAsString(),
+						obj.get("error_type").getAsString(),
+						null);
 			}
 		}
 		return new InstagramError(statusCode, "There was some error. Please try again", null, null);

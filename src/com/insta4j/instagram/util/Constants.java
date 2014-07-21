@@ -51,9 +51,13 @@ public class Constants {
 
 	public static final String PARAM_PERMISSION = "scope";
 
+	public static final String PARAM_IPADDRESS = "ipaddress";
+
 	public static final String PARAM_DISPLAY = "display";
 
     public static final int NETWORK_FAILURE_RETRY_COUNT = 2;
     public static final String KEY_NETWORK_FAILURE_RETRY_COUNT = "NETWORK_FAILURE_RETRY_COUNT";
+    public static final String HMAC_SHA256_ALGO = "HmacSHA256";
+
 
 }

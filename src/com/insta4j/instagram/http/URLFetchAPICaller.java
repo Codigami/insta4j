@@ -1,32 +1,23 @@
 package com.insta4j.instagram.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Map;
-
+import com.google.appengine.api.urlfetch.*;
 import com.insta4j.instagram.InstaProp;
+import com.insta4j.instagram.exception.InstagramException;
 import com.insta4j.instagram.util.Constants;
+import com.insta4j.instagram.util.InstagramUtil;
+import com.insta4j.instagram.util.JSONToObjectTransformer;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.google.appengine.api.urlfetch.HTTPMethod;
-import com.google.appengine.api.urlfetch.HTTPRequest;
-import com.google.appengine.api.urlfetch.HTTPResponse;
-import com.google.appengine.api.urlfetch.URLFetchService;
-import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
-import com.insta4j.instagram.exception.InstagramException;
-import com.insta4j.instagram.util.JSONToObjectTransformer;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Map;
 
 public class URLFetchAPICaller implements APICallerInterface {
 
@@ -119,6 +110,22 @@ public class URLFetchAPICaller implements APICallerInterface {
                 connection = (HttpURLConnection) posturl.openConnection();
                 connection.setDoOutput(true);
                 connection.setRequestMethod("POST");
+
+	            //If Ipaddress is there we are signing request
+	            String ipAddress = null;
+	            if(nameValuePairs != null){
+		            for (NameValuePair pair : nameValuePairs) {
+			            if(pair.getName().equals(Constants.PARAM_IPADDRESS)){
+				            ipAddress = pair.getValue();
+			            }
+		            }
+		            if(ipAddress != null){
+			            String digest = InstagramUtil.createSHAKey(ipAddress);
+			            connection.setRequestProperty("X-Insta-Forwarded-For", ipAddress+ "|" +digest);
+		            }
+	            }
+
+
                 // connection.setConnectTimeout(10000);
                 // connection.setReadTimeout(10000);
 

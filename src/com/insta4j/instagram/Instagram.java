@@ -10,6 +10,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +114,29 @@ public class Instagram implements Serializable {
 		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/users/self/media/liked", nameValuePairs);
 	}
 
-  public String relationship(String fbId, Relationship relationship) throws InstagramException {
-    NameValuePair[] nameValuePairs = new NameValuePair[2];
-      nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-      nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
-    return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
+	public String relationship(String fbId, Relationship relationship) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+		NameValuePair[] nameValuePairs = new NameValuePair[2];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
+		return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
+	}
+
+	/**
+	 *
+	 * @param fbId
+	 * @param relationship
+	 * @param headers Put "ipaddress" as key with the single / list of ip address
+	 * @return
+	 * @throws InstagramException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 */
+	public String relationship(String fbId, Relationship relationship, Map <String ,String > headers) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+    NameValuePair[] nameValuePairs = new NameValuePair[3];
+    nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+	  nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_ACTION, relationship.toString().toLowerCase());
+    nameValuePairs[2] = new BasicNameValuePair(Constants.PARAM_IPADDRESS, headers.get("ipaddress"));
+		return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
   }
 
   public Map<String, Object>  relationship(String fbId) throws InstagramException {
@@ -125,10 +145,26 @@ public class Instagram implements Serializable {
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
   }
 
-	public String  like(String userId) throws InstagramException {
-    NameValuePair[] nameValuePairs =  new NameValuePair[1];
+	public String  like(String userId) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+		NameValuePair[] nameValuePairs =  new NameValuePair[1];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" +userId+"/likes", nameValuePairs);
+	}
+
+	/**
+	 *
+	 * @param userId
+	 * @param headers Put "ipaddress" as key with the single / list of ip address
+	 * @return
+	 * @throws InstagramException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 */
+	public String  like(String userId, Map<String,String> headers) throws InstagramException, InvalidKeyException, NoSuchAlgorithmException {
+    NameValuePair[] nameValuePairs =  new NameValuePair[2];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-    return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" +userId+"/likes", nameValuePairs);
+		nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_IPADDRESS, headers.get("ipaddress"));
+		return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" +userId+"/likes", nameValuePairs);
   }
 
 	public String  unlike(String userId) throws InstagramException {
@@ -231,7 +267,7 @@ public class Instagram implements Serializable {
    * @return
    * @throws InstagramException
    */
-  public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
+  public String postData(String url, NameValuePair[] nameValuePairs) throws InstagramException, NoSuchAlgorithmException, InvalidKeyException {
     // APICaller would retrieve the json string object from instagram by making a https call
     // Once the json string object is obtaind, it is passed to obj transformer and the right object
     // is retrieved
