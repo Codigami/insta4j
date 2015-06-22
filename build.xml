@@ -5,7 +5,7 @@
   <property name="lib.dir" value="lib" />
   <property name="build.dir" value="build" />
   <property name="project.name" value="insta4j" />
-  <property name="project.version" value="0.2.9" />
+  <property name="project.version" value="0.2.10" />
   <property name="dist.dir" value="dist" />
   <property name="archive.name-insta4j" value="insta4j-${project.version}" />
   <property name="exclude-classes" value="com/insta4j/dummy/**,com/insta4j/instagram/test/**"></property>	

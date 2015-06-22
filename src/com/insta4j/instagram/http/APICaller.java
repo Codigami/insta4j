@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * APICaller will make http requests, obtain that response and return it without processing. Basically, the raw response is returned by every method.
@@ -46,7 +49,10 @@ public class APICaller implements APICallerInterface {
 	
 	private static final APICaller caller = new APICaller();
 	private static HttpClient httpClient = null;
-	
+
+	private static final Logger logger = Logger.getLogger(APICaller.class.getName());
+
+
 	private APICaller(){
 		
 	}
@@ -200,7 +206,7 @@ public class APICaller implements APICallerInterface {
         }
 
     if (statusCode != HttpStatus.SC_OK) {
-      //FacebookError error = new FacebookError(statusCode, "I guess you are not permitted to access this url. HTTP status code:"+statusCode, null);
+	   logger.log(Level.SEVERE, "Response is " + response + " and status code is" + statusCode);
       throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
     }
 		
