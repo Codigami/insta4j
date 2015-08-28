@@ -58,7 +58,7 @@ public class Instagram implements Serializable {
 	 */
 	public Map<String, Object> getUser(String fbId) throws InstagramException {
 		NameValuePair[] nameValuePairs = { new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()) };
-		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/", nameValuePairs);
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId, nameValuePairs);
 	}
 
   /**
