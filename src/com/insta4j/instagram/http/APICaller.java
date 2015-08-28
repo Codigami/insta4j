@@ -365,7 +365,7 @@ public class APICaller implements APICallerInterface {
     }
 
     //TODO: delete data method
-	
+
 	/*public static void main(String[] args) {
 		
 		APICaller client = APICaller.getInstance();
