@@ -6,6 +6,7 @@ import com.insta4j.instagram.exception.InstagramException;
 import com.insta4j.instagram.http.APICallerFactory;
 import com.insta4j.instagram.http.APICallerInterface;
 import com.insta4j.instagram.util.Constants;
+import com.insta4j.instagram.Client;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -140,9 +142,9 @@ public class Instagram implements Serializable {
   }
 
   public Map<String, Object>  relationship(String fbId) throws InstagramException {
-    NameValuePair[] nameValuePairs =  new NameValuePair[1];
+	NameValuePair[] nameValuePairs =  new NameValuePair[1];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
+	return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/relationship", nameValuePairs);
   }
 
 	public String  like(String userId) throws InstagramException{
@@ -190,8 +192,8 @@ public class Instagram implements Serializable {
       nameValuePairs = new NameValuePair[2];
       nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
       nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_CURSOR, cursor);
-    }
-    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/follows", nameValuePairs);
+	}
+	return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/follows", nameValuePairs);
   }
 
   /**
@@ -255,7 +257,7 @@ public class Instagram implements Serializable {
 		// APICaller would retrieve the json string object from instagram by making a https call
 		// Once the json string object is obtaind, it is passed to obj transformer and the right object
 		// is retrieved
-    return caller.getData(url, nameValuePairs);
+	return caller.getData(url, nameValuePairs);
 	}
 
   /**
@@ -271,14 +273,22 @@ public class Instagram implements Serializable {
     // APICaller would retrieve the json string object from instagram by making a https call
     // Once the json string object is obtaind, it is passed to obj transformer and the right object
     // is retrieved
-    return caller.postData(url, nameValuePairs);
+	return caller.postData(url, nameValuePairs);
   }
 
 	public String deleteData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
     // APICaller would retrieve the json string object from instagram by making a https call
     // Once the json string object is obtaind, it is passed to obj transformer and the right object
     // is retrieved
-    return caller.deleteData(url, nameValuePairs);
+	return caller.deleteData(url, nameValuePairs);
   }
+
+	/**
+	 * Sets client info in the caller object
+	 */
+	public void setClientInfo(Client client){
+		if (caller != null)
+			caller.setClient(client);
+	}
 	
 }
