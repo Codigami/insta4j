@@ -11,6 +11,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.Serializable;
+import java.lang.String;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -98,8 +99,18 @@ public class Instagram implements Serializable {
 	public Map<String, Object> getComments(String mediaId) throws InstagramException {
 		NameValuePair[] nameValuePairs = new NameValuePair[1];
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
-		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId+"/comments", nameValuePairs);
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId + "/comments", nameValuePairs);
 	}
+
+    /**
+     * Create a comment on a media.
+     */
+    public String setMediaComments(String mediaId, String text) throws InstagramException {
+        NameValuePair[] nameValuePairs = new NameValuePair[2];
+        nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+        nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_COMMENT_TEXT, text);
+        return postData(Constants.INSTAGRAM_GRAPH_URL + "/" + "media" + "/" + mediaId + "/comments", nameValuePairs);
+    }
 
 	public Map<String, Object> getMediaLiked(Integer count, String MAX_LIKE_ID) throws InstagramException {
 		NameValuePair[] nameValuePairs = new NameValuePair[3];
