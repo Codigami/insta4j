@@ -4,6 +4,7 @@ import com.insta4j.instagram.InstaProp;
 import com.insta4j.instagram.exception.InstagramException;
 import com.insta4j.instagram.util.Constants;
 import com.insta4j.instagram.util.InstagramUtil;
+import com.insta4j.instagram.Client;
 import com.insta4j.instagram.util.JSONToObjectTransformer;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
@@ -46,6 +47,7 @@ public class APICaller implements APICallerInterface {
 
     private static final APICaller caller = new APICaller();
     private static HttpClient httpClient = null;
+    private Client instagramClient = null;
 
     private static final Logger logger = Logger.getLogger(APICaller.class.getName());
 
@@ -139,6 +141,12 @@ public class APICaller implements APICallerInterface {
         String response = null;
         String signature = getEndpoint(url);
 
+        //client secret from instagramClient object
+        String clientSecret = null;
+
+        if (instagramClient != null)
+            clientSecret = instagramClient.getClientSecret();
+
         //This part is when the nameValuePairs is null indicating the params are most probably in the url
         String urlSplit[] = null;
         HttpParams httpParams = null;
@@ -158,7 +166,7 @@ public class APICaller implements APICallerInterface {
                 signature = signature + "|" + pair.getName() + "=" + pair.getValue();
             }
 
-            signature = InstagramUtil.createSHAKey(signature);
+            signature = InstagramUtil.createSHAKey(signature, clientSecret);
 
             boolean isFirst = true;
             for (NameValuePair pair : nameValuePairs) {
@@ -230,6 +238,12 @@ public class APICaller implements APICallerInterface {
         HttpClient client = APICaller.getHttpClient();
         String response = null;
 
+        //client secret from instagramClient object
+        String clientSecret = null;
+
+        if (instagramClient != null)
+            clientSecret = instagramClient.getClientSecret();
+
         HttpPost postMethod = null;
         postMethod = new HttpPost(url);
         int statusCode = -1;
@@ -248,7 +262,7 @@ public class APICaller implements APICallerInterface {
                 }
             }
             if (ipAddress != null) {
-                String digest = InstagramUtil.createSHAKey(ipAddress);
+                String digest = InstagramUtil.createSHAKey(ipAddress, clientSecret);
                 postMethod.setHeader("X-Insta-Forwarded-For", ipAddress + "|" + digest);
             }
         }
@@ -271,7 +285,7 @@ public class APICaller implements APICallerInterface {
                         signature = signature + "|" + pair.getName() + "=" + pair.getValue();
                     }
 
-                    signature = InstagramUtil.createSHAKey(signature);
+                    signature = InstagramUtil.createSHAKey(signature, clientSecret);
 
                     nameValuePairsList.add(new BasicNameValuePair("sig", signature));
 
@@ -379,5 +393,8 @@ public class APICaller implements APICallerInterface {
 		}
 	}*/
 
+    public void setClient(Client client){
+        this.instagramClient = new Client (client.getClientId(), client.getClientSecret());
+    }
 
 }

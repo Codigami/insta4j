@@ -6,6 +6,7 @@ import com.insta4j.instagram.exception.InstagramException;
 import com.insta4j.instagram.util.Constants;
 import com.insta4j.instagram.util.InstagramUtil;
 import com.insta4j.instagram.util.JSONToObjectTransformer;
+import com.insta4j.instagram.Client;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.codehaus.jackson.JsonParseException;
@@ -20,6 +21,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 public class URLFetchAPICaller implements APICallerInterface {
+
+    private Client client = null;
 
     public Map<String, Object> getData(String url, NameValuePair[] nameValuePairs) throws InstagramException {
 
@@ -97,6 +100,13 @@ public class URLFetchAPICaller implements APICallerInterface {
 
         String content = null;
         String constructedParams = null;
+
+        ///client secret from client object
+        String clientSecret = null;
+
+        if (client != null)
+            clientSecret = client.getClientSecret();
+
         int statusCode = 0;
         HttpURLConnection connection = null;
         int retry = Constants.NETWORK_FAILURE_RETRY_COUNT;
@@ -120,7 +130,7 @@ public class URLFetchAPICaller implements APICallerInterface {
 			            }
 		            }
 		            if(ipAddress != null){
-			            String digest = InstagramUtil.createSHAKey(ipAddress);
+			            String digest = InstagramUtil.createSHAKey(ipAddress, clientSecret);
 			            connection.setRequestProperty("X-Insta-Forwarded-For", ipAddress+ "|" +digest);
 		            }
 	            }
@@ -284,5 +294,11 @@ public class URLFetchAPICaller implements APICallerInterface {
 
 		return constructedParams;
 	}
+
+
+
+    public void setClient(Client client){
+        this.client = new Client (client.getClientId(), client.getClientSecret());
+    }
 
 }
