@@ -194,6 +194,25 @@ public class Instagram implements Serializable {
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/follows", nameValuePairs);
   }
 
+	/**
+	 * Get the list of logged-in user follows.
+	 * @param cursor
+	 * @return
+	 * @throws InstagramException
+	 */
+	public Map<String, Object> follows(String cursor) throws InstagramException {
+		NameValuePair[] nameValuePairs = null;
+		if(cursor == null){
+			nameValuePairs = new NameValuePair[1];
+			nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		}else{
+			nameValuePairs = new NameValuePair[2];
+			nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+			nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_CURSOR, cursor);
+		}
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/self/follows", nameValuePairs);
+	}
+
   /**
    * Get the list of users this user is followed by.
    *
@@ -214,7 +233,27 @@ public class Instagram implements Serializable {
     return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/" + fbId+"/followed-by", nameValuePairs);
   }
 
-  /**
+	/**
+	 * Get the list of logged-in user is followed by.
+	 * @param cursor
+	 * @return
+	 * @throws InstagramException
+	 */
+	public Map<String, Object> followedBy(String cursor) throws InstagramException {
+		NameValuePair[] nameValuePairs = null;
+		if(cursor == null){
+			nameValuePairs = new NameValuePair[1];
+			nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		}else{
+			nameValuePairs = new NameValuePair[2];
+			nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+			nameValuePairs[1] = new BasicNameValuePair(Constants.PARAM_CURSOR, cursor);
+		}
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "users" + "/self/followed-by", nameValuePairs);
+	}
+
+
+	/**
    * Search for a user by name
    *
    * @param query
