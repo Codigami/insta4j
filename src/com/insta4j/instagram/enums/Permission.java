@@ -8,18 +8,22 @@ public enum Permission {
 	BASIC, 
 	
 	/**
-	 * to create or delete comments on a user’s behalf
+	 * to create or delete comments on a userï¿½s behalf
 	 */
 	COMMENTS , 
 	
 	/**
-	 * to follow and unfollow users on a user’s behalf
+	 * to follow and unfollow users on a userï¿½s behalf
 	 */
 	RELATIONSHIPS, 
 	
 	/**
-	 * to like and unlike items on a user’s behalf
+	 * to like and unlike items on a userï¿½s behalf
 	 */
-	LIKES; 
-	
+	LIKES,
+
+	PUBLIC_CONTENT,
+
+	FOLLOWER_LIST;
+
 }
