@@ -55,9 +55,15 @@ public class Constants {
 
 	public static final String PARAM_DISPLAY = "display";
 
-    public static final int NETWORK_FAILURE_RETRY_COUNT = 2;
+	public static final int NETWORK_FAILURE_RETRY_COUNT = 2;
     public static final String KEY_NETWORK_FAILURE_RETRY_COUNT = "NETWORK_FAILURE_RETRY_COUNT";
     public static final String HMAC_SHA256_ALGO = "HmacSHA256";
 
+    public static final String PARAM_LAT = "lat";
+	public static final String PARAM_LNG = "lng";
+	public static final String PARAM_MIN_TAG_ID = "min_tag_id";
+	public static final String PARAM_MAX_TAG_ID = "max_tag_id";
+
+	public static final String PARAM_DISTANCE = "distance";
 
 }
