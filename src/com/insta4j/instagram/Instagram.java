@@ -87,6 +87,108 @@ public class Instagram implements Serializable {
 
   }
 
+   /**
+   * Returns Media Based on Location 
+   *
+   * @param instagramId
+   * @param lat
+   * @param lng
+   * @param count
+   * @return Media based on location
+   * @throws InstagramException
+   */ 
+  public Map<String, Object> getLocationMedias(String instagramId, Double lat, Double lng, Integer count) throws InstagramException{
+  	List<BasicNameValuePair> basicNameValuePairList = new ArrayList<BasicNameValuePair>();
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()));
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count)));
+	basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_LAT, String.valueOf(lat)));
+	basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_LNG, String.valueOf(lng)));
+ 	NameValuePair[] nameValuePairs = new NameValuePair[basicNameValuePairList.size()];
+  	for(int i=0; i< basicNameValuePairList.size(); i++){
+		nameValuePairs[i] = basicNameValuePairList.get(i);
+	}
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/media/search", nameValuePairs);
+  }
+
+  /**
+   * Returns Recent media based on the tage
+   *
+   * @param tagName
+   * @return
+   * @throws InstagramException
+   */
+  public Map<String, Object> getTaggedMedia(String tagName, Integer count,String max_id,String min_id) throws InstagramException {
+	  List<BasicNameValuePair> basicNameValuePairList = new ArrayList<BasicNameValuePair>();
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()));
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count)));
+	  if(max_id != null){
+		  basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_MAX_TAG_ID, max_id));
+	  }
+	  if(min_id != null){
+		  basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_MIN_TAG_ID, min_id));
+	  }
+
+	  NameValuePair[] nameValuePairs = new NameValuePair[basicNameValuePairList.size()];
+	  for(int i=0; i< basicNameValuePairList.size(); i++){
+		  nameValuePairs[i] = basicNameValuePairList.get(i);
+	  }
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/" + "tags" + "/" + tagName +"/media/recent", nameValuePairs);
+  }
+
+  
+   /**
+   * Returns LocationIds based on Latitude and longitude
+   *
+   * @param lat
+   * @param lng
+   * @param distance (Instagram default is 500 M)
+   * @return locationIds based in latitude and longitude
+   * @throws InstagramException
+   */ 
+  public Map<String, Object> getLocationIds(Double lat, Double lng, Double distance) throws InstagramException{
+  	List<BasicNameValuePair> basicNameValuePairList = new ArrayList<BasicNameValuePair>();
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()));
+  	if(distance != null){
+    	basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_DISTANCE, String.valueOf(distance)));
+	}
+	basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_LAT, String.valueOf(lat)));
+	basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_LNG, String.valueOf(lng)));
+ 	NameValuePair[] nameValuePairs = new NameValuePair[basicNameValuePairList.size()];
+  	for(int i=0; i< basicNameValuePairList.size(); i++){
+		nameValuePairs[i] = basicNameValuePairList.get(i);
+	}
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/locations/search", nameValuePairs);
+  }
+
+
+ /**
+   * Returns Medias based in location Ids
+   *
+   * @param locationId
+   * @param min_id
+   * @param max_id
+   * @return medias based on locationIds
+   * @throws InstagramException
+   */ 
+  public Map<String, Object> getLocationMedias(String locationId, Integer count, String min_id, String max_id) throws InstagramException{
+  	 List<BasicNameValuePair> basicNameValuePairList = new ArrayList<BasicNameValuePair>();
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken()));
+    basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_COUNT, String.valueOf(count)));
+	  if(max_id != null){
+		  basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_MAX_TAG_ID, max_id));
+	  }
+
+	  if(min_id != null){
+		  basicNameValuePairList.add( new BasicNameValuePair(Constants.PARAM_MIN_TAG_ID, min_id));
+	  }
+	  NameValuePair[] nameValuePairs = new NameValuePair[basicNameValuePairList.size()];
+	  for(int i=0; i< basicNameValuePairList.size(); i++){
+		  nameValuePairs[i] = basicNameValuePairList.get(i);
+	  }
+    return pullData(Constants.INSTAGRAM_GRAPH_URL + "/locations/" + locationId + "/media/recent", nameValuePairs);
+  }
+  
+
 	public Map<String, Object> getLikes(String mediaId) throws InstagramException {
     NameValuePair[] nameValuePairs = new NameValuePair[1];
     nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
