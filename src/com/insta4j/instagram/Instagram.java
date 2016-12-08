@@ -423,7 +423,7 @@ public class Instagram implements Serializable {
   }
 
 	/**
-	 * this method will return the media using userIds.
+	 * this method will return the media using mediaId.
 	 * @param mediaId
 	 * @return
 	 * @throws InstagramException
