@@ -421,5 +421,16 @@ public class Instagram implements Serializable {
     // is retrieved
     return caller.deleteData(url, nameValuePairs);
   }
-	
+
+	/**
+	 * this method will return the media using mediaId.
+	 * @param mediaId
+	 * @return
+	 * @throws InstagramException
+	 */
+	public Map<String, Object> getMediaUsingId(String  mediaId) throws InstagramException {
+		NameValuePair[] nameValuePairs = new NameValuePair[1];
+		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
+		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/media/" +mediaId ,nameValuePairs);
+	}
 }
