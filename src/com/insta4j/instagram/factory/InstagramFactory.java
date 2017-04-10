@@ -55,6 +55,7 @@ public class InstagramFactory extends OAuthFactory implements Serializable {
 		this.client = client;
 		this.httpClientType = clientType;
 		caller = APICallerFactory.getAPICallerInstance(clientType);
+		caller.setClient(client);
 	}
 	
 	public HttpClientType getHttpClientType() {
@@ -67,7 +68,9 @@ public class InstagramFactory extends OAuthFactory implements Serializable {
 	 * @return Instagram instance 
 	 */
 	public Instagram getInstance(OAuthAccessToken accessToken){
-		return new Instagram(accessToken,httpClientType);
+		Instagram instagram = new Instagram(accessToken,httpClientType);
+		instagram.setClientInfo(client);
+		return instagram;
 	}
 
 	
