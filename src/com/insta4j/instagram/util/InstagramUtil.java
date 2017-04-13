@@ -14,11 +14,16 @@ import java.util.Properties;
 public class InstagramUtil {
 
 
-	public static String createSHAKey(String ipAddress) throws InstagramException {
+	public static String createSHAKey(String ipAddress, String clientSecret) throws InstagramException {
 
 
 		String digest = null;
-	  SecretKeySpec signingKey = new SecretKeySpec(getClientSecret().getBytes(), Constants.HMAC_SHA256_ALGO);
+		String clientSecretForSHA = getClientSecret();
+		if (clientSecretForSHA == null || clientSecretForSHA.equals("")){
+			clientSecretForSHA = clientSecret;
+		}
+		SecretKeySpec signingKey = new SecretKeySpec(clientSecretForSHA.getBytes(), Constants.HMAC_SHA256_ALGO);
+
 		Mac mac = null;
 		try {
 			mac = Mac.getInstance(Constants.HMAC_SHA256_ALGO);

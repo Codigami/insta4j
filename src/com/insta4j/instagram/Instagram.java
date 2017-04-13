@@ -433,4 +433,10 @@ public class Instagram implements Serializable {
 		nameValuePairs[0] = new BasicNameValuePair(Constants.PARAM_ACCESS_TOKEN, this.authAccessToken.getAccessToken());
 		return pullData(Constants.INSTAGRAM_GRAPH_URL + "/media/" +mediaId ,nameValuePairs);
 	}
+
+
+	public void setClientInfo(Client client){
+		if (caller != null)
+			caller.setClient(client);
+		}
 }
