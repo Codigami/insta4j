@@ -209,7 +209,6 @@ public class APICaller implements APICallerInterface {
         }
 
         if (statusCode != HttpStatus.SC_OK) {
-            logger.log(Level.SEVERE, "Response is " + response + " and status code is" + statusCode);
             throw new InstagramException(JSONToObjectTransformer.getError(response, statusCode));
         }
 
